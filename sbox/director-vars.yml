@@ -1,0 +1,30 @@
+---
+bosh_root_storage_account: sboxdirector
+client_id: 4503d618-333f-4870-a0df-f16011958cae
+client_secret: fa2c7a0b-0cc1-48dc-a773-e63b3641961d
+wildcard_vm_storage_account: '*sboxboshvms*'
+bosh_deployed_vms_security_group_name: sbox-bosh-deployed-vms-security-group
+pcf_resource_group_name: sbox
+subscription_id: d16300c5-4fa7-4fa1-8d13-4a85de5b9e9a
+tenant_id: 3df8eb91-aed7-41a0-b4e1-cae0fc88f943
+network_name: sboxnet-virtual-network
+network_resource_group_name: sboxnet
+infrastructure_subnet_name: infra
+infrastructure_subnet_cidrs: 10.1.3.0/24
+infrastructure_subnet_gateway: 10.1.3.1
+infrastructure_subnet_reserved_range: 10.1.3.1-10.1.3.9
+pas_subnet_name: pas
+pas_subnet_cidrs: 10.1.0.0/24
+pas_subnet_gateway: 10.1.0.1
+pas_subnet_reserved_range: 10.1.0.1-10.1.0.9
+services_subnet_name: services
+services_subnet_cidrs: 10.1.1.0/24  
+services_subnet_gateway: 10.1.1.1
+services_subnet_reserved_range: 10.1.1.1-10.1.1.9
+ops_manager_ssh_public_key: ssh-rsa AAAAB3NzaC1yc2E...540qi3EwnIzOtRMkGAq6zjZ1eZsAs+ttQ==
+ops_manager_ssh_private_key: |-
+  -----BEGIN RSA PRIVATE KEY EXAMPLE-----
+  MIIJKAIBAAKCAgEAswHTf4UjihocLvQv0GvuiW4D+zpzxPhGjfu2LCErp3qWhQSF
+  NrJCXRmvyasHuk35fzo/wXc1OeEby2fKRm2XvTAHd0TrqJRbZ8hMNLes60c=
+  -----END RSA PRIVATE KEY-----
+  

@@ -1,0 +1,32 @@
+---
+pas_network_name: pas
+tcp_lb: sbox-tcp-lb
+web_lb: sbox-web-lb
+ssh_lb: sbox-diego-ssh-lb
+cloud_controller_apps_domain: apps.sbox.example.com
+cloud_controller-system_domain: sys.sbox.example.com
+mysql_monitor-recipient_email: noreply@example.com
+properties_credhub_key_encryption_passwords_0_key:
+  secret: abcdsomething20charsorlonger
+properties_networking_poe_ssl_certs_0_certificate:
+  cert_pem: |-
+    -----BEGIN CERTIFICATE EXAMPLE-----
+    MIIEHTCCAwWgAwIBAgIUawbIQLydj0YIFcTqTUSC9ZvS9pQwDQYJKoZIhvcNAQEL
+    Qg==
+    -----END CERTIFICATE-----
+  private_key_pem: |-
+    -----BEGIN RSA PRIVATE KEY EXAMPLE-----
+    MIIEpAIBAAKCAQEA2DHiPgcPsDo2Sk32ytpu9fp2PFzLff8gHZHODJO4seZ7d4y0
+    nBBaTW6iUwUj0lpRcxjCB1rQ0A+MAEzIH2djLH8qMpy6PXQnx8o2VA==
+    -----END RSA PRIVATE KEY-----
+uaa_service_provider_key_credentials:
+  cert_pem: |-
+    -----BEGIN CERTIFICATE EXAMPLE-----
+    MIIEHTCCAwWgAwIBAgIUJ3Vkg0NmkYiOzxpja/H1zKZz7K4wDQYJKoZIhvcNAQEL
+    oQ==
+    -----END CERTIFICATE-----
+  private_key_pem: |-
+    -----BEGIN RSA PRIVATE KEY EXAMPLE-----
+    MIIEpAIBAAKCAQEA22UXdizpPY40/7s2KC1HzMOrqEHWpYZiuo1/oN5p1BvhAXLN
+    /TX97zdtjY/zrif8eWkkG4Ms9UVsAbbGVrLBdH6yGM/fr+ZOkKLy/Q==
+    -----END RSA PRIVATE KEY-----

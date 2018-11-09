@@ -1,0 +1,14 @@
+---
+foundation: sbox
+pivnet_token: FsnJ21ow5OyvMoH64FACT1ZzNZn4d+FdO-r
+pcf_automation_version: 0.0.1-rc.229
+pas_version: 2\.3\..*
+healthwatch_version: 1\.3\..*
+stemcell_xenial_version: 97\..*
+stemcell_trusty_version: 3541\..*
+git_uri: git@example.com:user/pipeline-config.git
+git_private_key: |-
+  -----BEGIN RSA PRIVATE KEY EXAMPLE-----
+  MIIEpAIBAAKCAQEAzq4Q6lqp4rC1Lt6JnwOJLCnJwji0l2XtZe5GLf3xLfPg0gFA
+  OfzPNg53m5c2s3ieU1EGmPDw0//ZPbf6r1Vw/uP7If7iFAnOxLvfZA==
+  -----END RSA PRIVATE KEY-----

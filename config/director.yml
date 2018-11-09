@@ -1,0 +1,60 @@
+---
+director-configuration:
+  ntp_servers_string: 0.pool.ntp.org,1.pool.ntp.org
+  resurrector_enabled: true
+  retry_bosh_deploys: false
+  blobstore_type: local
+iaas-configuration:
+  bosh_storage_account_name: ((bosh_root_storage_account))
+  client_id: ((client_id))
+  client_secret: ((client_secret))
+  cloud_storage_type: storage_accounts
+  deployments_storage_account_name: ((wildcard_vm_storage_account))
+  default_security_group: ((bosh_deployed_vms_security_group_name))
+  environment: AzureCloud
+  resource_group_name: ((pcf_resource_group_name))
+  ssh_public_key: ((ops_manager_ssh_public_key))
+  ssh_private_key: ((ops_manager_ssh_private_key))
+  subscription_id: ((subscription_id))
+  tenant_id: ((tenant_id))
+resource-configuration:
+  compilation:
+    instances: automatic
+    instance_type:
+      id: Standard_DS3_v2
+    internet_connected: false
+  director:
+    instances: automatic
+    persistent_disk:
+      size_mb: "307200"
+    instance_type:
+      id: automatic
+    internet_connected: false
+network-assignment:
+  network:
+    name: infrastructure
+  singleton_availability_zone:
+    name: "null"
+networks-configuration:
+  networks:
+  - name: infrastructure
+    subnets:
+    - iaas_identifier: ((network_resource_group_name))/((network_name))/((infrastructure_subnet_name))
+      cidr: ((infrastructure_subnet_cidrs))
+      reserved_ip_ranges: ((infrastructure_subnet_reserved_range))
+      gateway: ((infrastructure_subnet_gateway))
+      dns: 168.63.129.16
+  - name: pas
+    subnets:
+    - iaas_identifier: ((network_resource_group_name))/((network_name))/((pas_subnet_name))
+      cidr: ((pas_subnet_cidrs))
+      reserved_ip_ranges: ((pas_subnet_reserved_range))
+      gateway: ((pas_subnet_gateway))
+      dns: 168.63.129.16
+  - name: services
+    subnets:
+    - iaas_identifier: ((network_resource_group_name))/((network_name))/((services_subnet_name))
+      cidr: ((services_subnet_cidrs))
+      reserved_ip_ranges: ((services_subnet_reserved_range))
+      gateway: ((services_subnet_gateway))
+      dns: 168.63.129.16

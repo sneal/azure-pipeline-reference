@@ -1,0 +1,303 @@
+resource_types:
+
+- name: pivnet
+  type: docker-image
+  source:
+    repository: pivotalcf/pivnet-resource
+    tag: latest-final
+
+
+resources:
+
+- name: pcf-automation-pivnet
+  type: pivnet
+  source:
+    api_token: ((pivnet_token))
+    product_slug: platform-automation
+    product_version: ((pcf_automation_version))
+    sort_by: semver
+
+- name: configuration
+  type: git
+  source:
+    private_key: ((git_private_key))
+    uri: ((git_uri))
+    branch: master
+
+- name: stemcell-trusty
+  type: pivnet
+  source:
+    api_token: ((pivnet_token))
+    product_slug: stemcells
+    product_version: ((stemcell_trusty_version))
+    sort_by: semver
+
+- name: stemcell-xenial
+  type: pivnet
+  source:
+    api_token: ((pivnet_token))
+    product_slug: stemcells-ubuntu-xenial
+    product_version: ((stemcell_xenial_version))
+    sort_by: semver
+
+- name: pas-tile
+  type: pivnet
+  source:
+    api_token: ((pivnet_token))
+    product_slug: elastic-runtime
+    product_version: ((pas_version))
+    sort_by: semver
+
+- name: healthwatch-tile
+  type: pivnet
+  source:
+    api_token: ((pivnet_token))
+    product_slug: p-healthwatch
+    product_version: ((healthwatch_version))
+    sort_by: semver
+
+
+jobs:
+
+- name: config-opsman
+  serial: true
+  serial_groups: [ config-opsman ]
+  plan:
+  - aggregate:
+    - get: pcf-automation-image
+      resource: pcf-automation-pivnet
+      params:
+        globs: ["platform-automation-image*.tgz"]
+        unpack: true
+    - get: pcf-automation-tasks
+      resource: pcf-automation-pivnet
+      params:
+        globs: ["platform-automation-tasks*.zip"]
+        unpack: true
+    - get: configuration
+  - task: configure-authentication
+    image: pcf-automation-image
+    file: pcf-automation-tasks/tasks/configure-authentication.yml
+    attempts: 10
+    input_mapping:
+      env: configuration
+      config: configuration
+    params:
+      ENV_FILE: ((foundation))/env.yml
+      AUTH_CONFIG_FILE: ((foundation))/auth.yml
+  - task: configure-director
+    image: pcf-automation-image
+    file: pcf-automation-tasks/tasks/configure-director.yml
+    input_mapping:
+      config: configuration
+      env: configuration
+      vars: configuration
+    params:
+      VARS_FILES: vars/((foundation))/director-vars.yml
+      ENV_FILE: ((foundation))/env.yml
+      DIRECTOR_CONFIG_FILE: config/director.yml
+  - task: apply-director-changes
+    image: pcf-automation-image
+    file: pcf-automation-tasks/tasks/apply-director-changes.yml
+    input_mapping:
+      env: configuration
+    params:
+      ENV_FILE: ((foundation))/env.yml
+
+
+- name: upload-and-stage-pas
+  serial: true
+  plan:
+  - aggregate:
+    - get: pcf-automation-image
+      resource: pcf-automation-pivnet
+      params:
+        globs: ["platform-automation-image*.tgz"]
+        unpack: true
+      passed:
+      - config-opsman
+      trigger: true
+    - get: pcf-automation-tasks
+      resource: pcf-automation-pivnet
+      params:
+        globs: ["platform-automation-tasks*.zip"]
+        unpack: true
+    - get: configuration
+    - get: pas-tile
+      params:
+        globs: ["cf-*.pivotal"]
+  - task: upload-and-stage-product
+    image: pcf-automation-image
+    file: pcf-automation-tasks/tasks/upload-and-stage-product.yml
+    input_mapping:
+      env: configuration
+      product: pas-tile
+    params:
+      ENV_FILE: ((foundation))/env.yml
+
+
+- name: configure-pas
+  serial: true
+  plan:
+  - aggregate:
+    - get: pcf-automation-image
+      resource: pcf-automation-pivnet
+      params:
+        globs: ["platform-automation-image*.tgz"]
+        unpack: true
+      passed:
+      - upload-and-stage-pas
+      trigger: true
+    - get: pcf-automation-tasks
+      resource: pcf-automation-pivnet
+      params:
+        globs: ["platform-automation-tasks*.zip"]
+        unpack: true
+    - get: configuration
+  - task: configure-pas
+    image: pcf-automation-image
+    file: pcf-automation-tasks/tasks/configure-product.yml
+    input_mapping:
+      config: configuration
+      env: configuration
+      vars: configuration
+    params:
+      CONFIG_FILE: config/cf.yml
+      ENV_FILE: ((foundation))/env.yml
+      VARS_FILES: vars/((foundation))/cf-vars.yml
+
+
+- name: upload-stemcells
+  serial: true
+  plan:
+  - aggregate:
+    - get: pcf-automation-image
+      resource: pcf-automation-pivnet
+      params:
+        globs: ["platform-automation-image*.tgz"]
+        unpack: true
+      passed:
+      - configure-pas
+      trigger: true
+    - get: pcf-automation-tasks
+      resource: pcf-automation-pivnet
+      params:
+        globs: ["platform-automation-tasks*.zip"]
+        unpack: true
+    - get: configuration
+    - get: stemcell-trusty
+      trigger: true
+      params:
+        globs:
+        - bosh-stemcell-*azure-hyperv*
+    - get: stemcell-xenial
+      trigger: true
+      params:
+        globs:
+        - bosh-stemcell-*azure-hyperv*
+  - task: upload-trusty-stemcell
+    image: pcf-automation-image
+    file: pcf-automation-tasks/tasks/upload-stemcell.yml
+    input_mapping:
+      env: configuration
+      stemcell: stemcell-trusty
+    params:
+      ENV_FILE: ((foundation))/env.yml
+  - task: upload-xenial-stemcell
+    image: pcf-automation-image
+    file: pcf-automation-tasks/tasks/upload-stemcell.yml
+    input_mapping:
+      env: configuration
+      stemcell: stemcell-xenial
+    params:
+      ENV_FILE: ((foundation))/env.yml
+
+
+- name: upload-and-stage-healthwatch
+  serial: true
+  plan:
+  - aggregate:
+    - get: pcf-automation-image
+      resource: pcf-automation-pivnet
+      params:
+        globs: ["platform-automation-image*.tgz"]
+        unpack: true
+      passed:
+      - upload-stemcells
+      trigger: true
+    - get: pcf-automation-tasks
+      resource: pcf-automation-pivnet
+      params:
+        globs: ["platform-automation-tasks*.zip"]
+        unpack: true
+    - get: configuration
+    - get: healthwatch-tile
+  - task: upload-and-stage-product
+    image: pcf-automation-image
+    file: pcf-automation-tasks/tasks/upload-and-stage-product.yml
+    input_mapping:
+      product: healthwatch-tile
+      config: configuration
+      env: configuration
+    params:
+      CONFIG_FILE: config/healthwatch.yml
+      ENV_FILE: ((foundation))/env.yml
+
+
+- name: configure-healthwatch
+  serial: true
+  plan:
+  - aggregate:
+    - get: pcf-automation-image
+      resource: pcf-automation-pivnet
+      params:
+        globs: ["platform-automation-image*.tgz"]
+        unpack: true
+      passed:
+      - upload-and-stage-healthwatch
+      trigger: true
+    - get: pcf-automation-tasks
+      resource: pcf-automation-pivnet
+      params:
+        globs: ["platform-automation-tasks*.zip"]
+        unpack: true
+    - get: configuration
+  - task: configure-healthwatch
+    image: pcf-automation-image
+    file: pcf-automation-tasks/tasks/configure-product.yml
+    input_mapping:
+      config: configuration
+      env: configuration
+      vars: configuration
+    params:
+      CONFIG_FILE: config/healthwatch.yml
+      ENV_FILE: ((foundation))/env.yml
+      VARS_FILES: vars/((foundation))/healthwatch-vars.yml
+
+
+- name: apply-product-changes
+  serial: true
+  plan:
+  - aggregate:
+    - get: pcf-automation-image
+      resource: pcf-automation-pivnet
+      params:
+        globs: ["platform-automation-image*.tgz"]
+        unpack: true
+      passed:
+      - configure-healthwatch
+      - configure-pas
+      trigger: true
+    - get: pcf-automation-tasks
+      resource: pcf-automation-pivnet
+      params:
+        globs: ["platform-automation-tasks*.zip"]
+        unpack: true
+    - get: configuration
+  - task: apply-product-changes
+    image: pcf-automation-image
+    file: pcf-automation-tasks/tasks/apply-changes.yml
+    input_mapping:
+      env: configuration
+    params:
+      ENV_FILE: ((foundation))/env.yml

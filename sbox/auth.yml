@@ -1,0 +1,4 @@
+---
+username: admin
+password: $ecret
+decryption-passphrase: $ecret
