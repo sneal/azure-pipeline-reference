@@ -237,10 +237,8 @@ jobs:
     file: pcf-automation-tasks/tasks/upload-and-stage-product.yml
     input_mapping:
       product: healthwatch-tile
-      config: configuration
       env: configuration
     params:
-      CONFIG_FILE: config/healthwatch.yml
       ENV_FILE: ((foundation))/env.yml
 
 
