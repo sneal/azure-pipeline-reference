@@ -1,0 +1,4 @@
+---
+network: pas
+mysql_roadmin_password:
+  secret:
