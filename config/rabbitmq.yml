@@ -16,6 +16,10 @@ product-properties:
     value: false
   .properties.multitenant_support.enabled.disk_alarm_threshold:
     value: '{mem_relative,1.0}'
+  .properties.multitenant_support.enabled.server_admin_credentials:
+    value:
+      identity: ((properties_multitenant_support_enabled_server_admin_credentials.identity))
+      password: ((properties_multitenant_support_enabled_server_admin_credentials.password))
   .properties.multitenant_support.enabled.server_cluster_partition_handling:
     value: pause_minority
   .properties.multitenant_support.enabled.server_plugins:
@@ -23,6 +27,10 @@ product-properties:
     - rabbitmq_management
   .properties.multitenant_support.enabled.server_ports:
     value: 15672, 5672, 5671, 1883, 8883, 61613, 61614, 15674
+  .properties.multitenant_support.enabled.server_rsa_certificate:
+    value:
+      cert_pem: ((properties_multitenant_support_enabled_server_rsa_certificate.cert_pem))
+      private_key_pem: ((properties_multitenant_support_enabled_server_rsa_certificate.private_key_pem))
   .properties.multitenant_support.enabled.server_ssl_fail_if_no_peer_cert:
     value: false
   .properties.multitenant_support.enabled.server_ssl_verification_depth:
@@ -54,7 +62,29 @@ product-properties:
   .properties.on_demand_broker_plan_1_rabbitmq_number_of_nodes:
     value: 1
   .properties.on_demand_broker_plan_2_selector:
-    value: disabled
+    value: enabled
+  .properties.on_demand_broker_plan_2_selector.enabled.cf_service_access:
+    value: enable
+  .properties.on_demand_broker_plan_2_selector.enabled.description:
+    value: RabbitMQ 3.7 dedicated Cluster
+  .properties.on_demand_broker_plan_2_selector.enabled.disk_limit_acknowledgement:
+    value:
+    - acknowledge
+  .properties.on_demand_broker_plan_2_selector.enabled.features:
+    value: RabbitMQ 3.7
+  .properties.on_demand_broker_plan_2_selector.enabled.instance_quota:
+    value: 10
+  .properties.on_demand_broker_plan_2_selector.enabled.name:
+    value: cluster
+  .properties.on_demand_broker_plan_2_selector.enabled.rabbitmq_az_placement:
+    value:
+    - "null"
+  .properties.on_demand_broker_plan_2_selector.enabled.rabbitmq_cluster_partition_handling_strategy:
+    value: pause_minority
+  .properties.on_demand_broker_plan_2_selector.enabled.rabbitmq_number_of_nodes:
+    value: 3
+  .properties.on_demand_broker_plan_2_selector.enabled.rabbitmq_vm_type:
+    value: Standard_DS11_v2
   .properties.on_demand_broker_plan_3_selector:
     value: disabled
   .properties.on_demand_broker_plan_4_selector:
