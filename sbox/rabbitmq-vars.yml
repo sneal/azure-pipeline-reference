@@ -1,0 +1,5 @@
+---
+service_network: services
+properties_multitenant_support_enabled_server_admin_credentials:
+  identity:
+  password:

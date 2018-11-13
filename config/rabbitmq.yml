@@ -27,10 +27,6 @@ product-properties:
     - rabbitmq_management
   .properties.multitenant_support.enabled.server_ports:
     value: 15672, 5672, 5671, 1883, 8883, 61613, 61614, 15674
-  .properties.multitenant_support.enabled.server_rsa_certificate:
-    value:
-      cert_pem: ((properties_multitenant_support_enabled_server_rsa_certificate.cert_pem))
-      private_key_pem: ((properties_multitenant_support_enabled_server_rsa_certificate.private_key_pem))
   .properties.multitenant_support.enabled.server_ssl_fail_if_no_peer_cert:
     value: false
   .properties.multitenant_support.enabled.server_ssl_verification_depth:
